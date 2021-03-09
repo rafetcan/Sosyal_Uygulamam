@@ -3,11 +3,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
+import 'package:socialapp/sayfalar/mesajlar.dart';
 import 'package:socialapp/sayfalar/yukle.dart';
 import 'package:socialapp/servisler/firestoreservisi.dart';
 import 'package:socialapp/servisler/yetkilendirmeservisi.dart';
 import 'package:socialapp/widgetlar/gonderikarti.dart';
 import 'package:socialapp/widgetlar/silinmeyenFutureBuilder.dart';
+import 'package:badges/badges.dart';
 
 class Akis extends StatefulWidget {
   @override
@@ -46,13 +48,20 @@ class _AkisState extends State<Akis> {
           iconSize: 18.0,
         ),
         iconTheme: IconThemeData(color: Colors.black87),
-        title: Text("Social App", style: TextStyle(color: Colors.black)),
+        title: Text("Sosyal Uygulamam", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.grey[100],
         centerTitle: true,
         actions: [
           IconButton(
-            icon: FaIcon(FontAwesomeIcons.inbox),
-            onPressed: () {},
+            icon: Badge(
+              badgeContent: Text("0", style: TextStyle(color: Colors.white, fontSize: 8.0)),
+              animationType: BadgeAnimationType.slide,
+              badgeColor: Colors.redAccent,
+              child: FaIcon(FontAwesomeIcons.inbox),
+            ),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => Mesajlar()));
+            },
             iconSize: 20.0,
           )
         ],

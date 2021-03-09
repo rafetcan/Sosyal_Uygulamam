@@ -1,5 +1,6 @@
 /android/app/google-services.json
-
+.firebaserc
+/firebaseimg/
 # Miscellaneous
 *.class
 *.log

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:socialapp/sayfalar/akis.dart';
 import 'package:socialapp/sayfalar/anasayfa.dart';
 import 'package:socialapp/servisler/firestoreservisi.dart';
 import 'package:socialapp/servisler/storageservisi.dart';
@@ -28,6 +27,11 @@ class _YukleState extends State<Yukle> {
 
   Widget yukleButonu() {
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("Gönderi Yükle", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.grey[100],
+      ),
       body: Center(
         child: GestureDetector(
             child: Icon(

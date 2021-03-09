@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
 import 'package:socialapp/sayfalar/profiliduzenle.dart';
+import 'package:socialapp/sayfalar/tekligonderi.dart';
 import 'package:socialapp/servisler/firestoreservisi.dart';
 import 'package:socialapp/servisler/yetkilendirmeservisi.dart';
 import 'package:socialapp/widgetlar/gonderikarti.dart';
@@ -57,6 +58,7 @@ class _ProfilState extends State<Profil> {
   _takipKontrol() async {
     bool takipVarMi = await FireStoreServisi()
         .takipKontrol(profilSahibiId: widget.profilSahibiId, aktifKullaniciId: _aktifKullaniciId);
+
     setState(() {
       _takipEdildi = takipVarMi;
     });
@@ -81,44 +83,74 @@ class _ProfilState extends State<Profil> {
     // }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Profil",
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Colors.grey[100],
-          actions: [
-            widget.profilSahibiId == _aktifKullaniciId
-                ? IconButton(
-                    icon: Icon(Icons.exit_to_app, color: Colors.black), onPressed: _cikisYap)
-                : SizedBox(height: 0.0),
-          ],
-          iconTheme: IconThemeData(
+      appBar: AppBar(
+        title: Text(
+          "Profil",
+          style: TextStyle(
             color: Colors.black,
           ),
         ),
-        body: FutureBuilder<Object>(
-            future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
-            builder: (context, snapshot) {
-              //
-              if (!snapshot.hasData) {
-                return Center(child: CircularProgressIndicator());
-              }
-              _profilSahibi = snapshot.data;
+        backgroundColor: Colors.grey[100],
+        actions: [
+          widget.profilSahibiId == _aktifKullaniciId
+              ? IconButton(icon: Icon(Icons.exit_to_app, color: Colors.black), onPressed: _cikisYap)
+              : IconButton(
+                  icon: Icon(Icons.more_vert),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SimpleDialog(
+                          title: Text("Seçiminiz Nedir?"),
+                          children: [
+                            SimpleDialogOption(
+                              child: Text("Profili şikayet et..."),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                                  duration: const Duration(seconds: 2),
+                                ));
+                              },
+                            ),
+                            SimpleDialogOption(
+                              child: Text("Vazgeç", style: TextStyle(color: Colors.red)),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  }),
+        ],
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+      ),
+      body: FutureBuilder<Object>(
+        future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
+        builder: (context, snapshot) {
+          //
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          _profilSahibi = snapshot.data;
 
-              return ListView(
-                children: [
-                  _profilDetaylari(snapshot.data),
-                  _gonderileriGoster(snapshot.data),
-                ],
-              );
-            }));
+          return ListView(
+            children: [
+              _profilDetaylari(snapshot.data),
+              _gonderileriGoster(snapshot.data),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _gonderileriGoster(Kullanici profilData) {
-    if (gonderiStili == "liste") {
+    if (gonderiStili == "liste1") {
       return ListView.builder(
         shrinkWrap: true,
         primary: false,
@@ -149,9 +181,18 @@ class _ProfilState extends State<Profil> {
 
   GridTile _fayansOlustur(Gonderi gonderi) {
     return GridTile(
-        child: Image.network(
-      gonderi.gonderiResmiUrl,
-      fit: BoxFit.cover,
+        child: GestureDetector(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => TekliGonderi(
+                    gonderiId: gonderi.id,
+                    gonderiSahibiId: gonderi.yayinlayanId,
+                  ))),
+      child: Image.network(
+        gonderi.gonderiResmiUrl,
+        fit: BoxFit.cover,
+      ),
     ));
   }
 
@@ -164,12 +205,11 @@ class _ProfilState extends State<Profil> {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: Colors.grey[300],
-                radius: 50,
-                backgroundImage: profileData.fotoUrl.isNotEmpty
-                    ? NetworkImage(profileData.fotoUrl)
-                    : AssetImage("assets/images/hayalet.png"),
-              ),
+                  backgroundColor: Colors.grey[300],
+                  radius: 50,
+                  backgroundImage: NetworkImage(profileData.fotoUrl.isNotEmpty
+                      ? profileData.fotoUrl
+                      : "https://rafethokka.com/app/socialapp/avatar/001.png")),
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -193,19 +233,45 @@ class _ProfilState extends State<Profil> {
           SizedBox(height: 5),
           Text(profileData.hakkinda),
           SizedBox(height: 25),
-          widget.profilSahibiId == _aktifKullaniciId ? _profileDuzenleButton() : _takipButonu(),
+          widget.profilSahibiId == _aktifKullaniciId
+              ? _profileDuzenleButton()
+              : _takipveMesajButonu(),
         ],
       ),
     );
   }
 
-  Widget _takipButonu() {
-    return _takipEdildi ? _takiptenCikButonu() : _takipEtButonu();
+  Widget _takipveMesajButonu() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _takipEdildi ? _takiptenCikButonu() : _takipEtButonu(),
+        Container(
+          width: MediaQuery.of(context).size.width / 2 - 20,
+          child: OutlinedButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text('Henüz çalışmalarımız bitmedi.'),
+                duration: const Duration(seconds: 2),
+                // action: SnackBarAction(
+                //   label: 'Tamam',
+                //   onPressed: () {},
+                // ),
+              ));
+            },
+            child: Text(
+              'Mesaj Gönder',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _takipEtButonu() {
     return Container(
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width / 2 - 20,
       child: ElevatedButton(
         // color: Theme.of(context).primaryColor,
         onPressed: () {
@@ -227,7 +293,7 @@ class _ProfilState extends State<Profil> {
 
   Widget _takiptenCikButonu() {
     return Container(
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width / 2 - 20,
       child: OutlinedButton(
         onPressed: () {
           FireStoreServisi().takiptenCik(

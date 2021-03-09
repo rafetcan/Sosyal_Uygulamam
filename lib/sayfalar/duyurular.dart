@@ -80,7 +80,10 @@ class _DuyurularState extends State<Duyurular> {
                 MaterialPageRoute(
                     builder: (context) => Profil(profilSahibiId: duyuru.aktiviteYapanId))),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(aktiviteYapan.fotoUrl),
+              backgroundColor: Colors.grey[100],
+              backgroundImage: NetworkImage(aktiviteYapan.fotoUrl.isNotEmpty
+                  ? aktiviteYapan.fotoUrl
+                  : "https://rafethokka.com/app/socialapp/avatar/016.png"),
             ),
           ),
           title: RichText(

@@ -2,13 +2,46 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:socialapp/modeller/duyuru.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
+import 'package:socialapp/modeller/mesaj.dart';
 import 'package:socialapp/servisler/storageservisi.dart';
 
 class FireStoreServisi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DateTime zaman = DateTime.now();
 
-  Future<void> kullaniciOlustur({id, email, kullaniciAdi, fotoUrl = ""}) async {
+  Future<int> gonderilenMesajSayisi(kullaniciId) async {
+    //aktif kullanıcı id gelecek
+    QuerySnapshot snapshot = await _firestore
+        .collection("mesajlar")
+        .doc(kullaniciId)
+        .collection("kullanicininMesajlari")
+        // .where("mesajiGonderenId", isGreaterThanOrEqualTo: kullaniciId)
+        .get();
+
+    return snapshot.docs.length;
+  }
+
+  Future<List<Mesaj>> gonderilenMesajlar(kullaniciId) async {
+    //aktif kullanıcı id gelecek
+    QuerySnapshot snapshot = await _firestore
+        .collection("mesajlar")
+        .doc(kullaniciId)
+        .collection("kullanicininMesajlari")
+        // .where("mesajiGonderenId", isGreaterThanOrEqualTo: kullaniciId)
+        .orderBy("olusturulmaZamani", descending: false)
+        .get();
+
+    List<Mesaj> mesajlar = snapshot.docs.map((doc) => Mesaj.dokumandanUret(doc)).toList();
+
+    return mesajlar;
+    // return snapshot.docs.length;
+  }
+
+  Future<void> kullaniciOlustur(
+      {id,
+      email,
+      kullaniciAdi,
+      fotoUrl = "https://rafethokka.com/app/socialapp/avatar/016.png"}) async {
     await _firestore.collection("kullanicilar").doc(id).set({
       "kullaniciAdi": kullaniciAdi,
       "email": email,
@@ -28,7 +61,10 @@ class FireStoreServisi {
   }
 
   void kullaniciGuncelle(
-      {String kullaniciId, String kullaniciAdi, String fotoUrl = "", String hakkinda}) {
+      {String kullaniciId,
+      String kullaniciAdi,
+      String fotoUrl = "https://rafethokka.com/app/socialapp/avatar/016.png",
+      String hakkinda}) {
     _firestore.collection("kullanicilar").doc(kullaniciId).update({
       "kullaniciAdi": kullaniciAdi,
       "hakkinda": hakkinda,
@@ -47,6 +83,14 @@ class FireStoreServisi {
     List<Kullanici> kullanicilar =
         snapshot.docs.map((doc) => Kullanici.dokumandanUret(doc)).toList();
 
+    return kullanicilar;
+  }
+
+  Future<List<Kullanici>> kesfetKullanicilariGetir() async {
+    QuerySnapshot snapshot = await _firestore.collection("kullanicilar").get();
+
+    List<Kullanici> kullanicilar =
+        snapshot.docs.map((doc) => Kullanici.dokumandanUret(doc)).toList();
     return kullanicilar;
   }
 
@@ -133,30 +177,89 @@ class FireStoreServisi {
     return snapshot.docs.length;
   }
 
-  void duyuruEkle(
+  Future<void> duyuruEkle(
       {String aktiviteYapanId,
       String profilSahibiId,
       String aktiviteTipi,
-      String yorum,
-      Gonderi gonderi}) {
+      String yorum = "",
+      Gonderi gonderi}) async {
     if (aktiviteYapanId == profilSahibiId) {
       return;
     }
 
-    _firestore
+    QuerySnapshot docQuery = await _firestore
         .collection("duyurular")
         .doc(profilSahibiId)
         .collection("kullanicininDuyurulari")
-        .add({
-      "aktiviteYapanId": aktiviteYapanId,
-      "aktiviteTipi": aktiviteTipi,
-      "gonderiId": gonderi?.id,
-      "gonderiFoto": gonderi?.gonderiResmiUrl,
-      "yorum": yorum,
-      "olusturulmaZamani": zaman
-    });
+        .where("aktiviteYapanId", isEqualTo: aktiviteYapanId)
+        .where("aktiviteTipi", isEqualTo: aktiviteTipi)
+        .where("yorum", isLessThanOrEqualTo: yorum)
+        .get();
+
+    // print(docQuery.docs.length);
+    if (docQuery.docs.length >= 1) {
+      docQuery.docs[0].reference.update({"olusturulmaZamani": zaman});
+      print("Aynı İşlem ${docQuery.docs.length} defa yapılmış.. Zamanını Güncelledim.");
+    }
+
+    if (docQuery.docs.isNotEmpty) {
+      List<Duyuru> duyurular = docQuery.docs.map((doc) => Duyuru.dokumandanUret(doc)).toList();
+
+      duyurular.forEach((Duyuru duyuru) {
+        // aktiviteTipi, aktiviteYapanId,profilSahibiId,yorum bunlar eşit ise
+        if (duyuru.aktiviteTipi == aktiviteTipi &&
+            duyuru.aktiviteYapanId == aktiviteYapanId &&
+            duyuru.yorum == yorum) {
+          print("Böyle bir işlemi daha önce yapmışsın dostum");
+
+          // _firestore.collection("duyurular").doc(profilSahibiId).collection("kullaniciDuyurulari")
+          // Birşey Yapma veya o dökumanın tarihini yenile.
+
+        } else {
+          _firestore
+              .collection("duyurular")
+              .doc(profilSahibiId)
+              .collection("kullanicininDuyurulari")
+              .add({
+            "aktiviteYapanId": aktiviteYapanId,
+            "aktiviteTipi": aktiviteTipi,
+            "gonderiId": gonderi?.id,
+            "gonderiFoto": gonderi?.gonderiResmiUrl,
+            "yorum": yorum,
+            "olusturulmaZamani": zaman
+          });
+        }
+      });
+    } else {
+      _firestore
+          .collection("duyurular")
+          .doc(profilSahibiId)
+          .collection("kullanicininDuyurulari")
+          .add({
+        "aktiviteYapanId": aktiviteYapanId,
+        "aktiviteTipi": aktiviteTipi,
+        "gonderiId": gonderi?.id,
+        "gonderiFoto": gonderi?.gonderiResmiUrl,
+        "yorum": yorum,
+        "olusturulmaZamani": zaman
+      });
+    }
+
+    // Test Edilmesi Gereken
+
+    // print(duyurular[0].aktiviteTipi);
+
+    // docQuery.docs.forEach((DocumentSnapshot doc) {
+    //   if (doc.exists) {
+    //     // print(doc);
+    //     doc.reference.update({
+    //       "olusturulmaZamani": zaman,
+    //     });
+    //   }
+    // });
   }
 
+//Todo
   Future<List<Duyuru>> duyurulariGetir(String profilSahibiId) async {
     QuerySnapshot snapshot = await _firestore
         .collection("duyurular")

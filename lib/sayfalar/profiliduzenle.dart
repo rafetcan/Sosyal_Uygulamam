@@ -87,7 +87,9 @@ class _ProfiliDuzenleState extends State<ProfiliDuzenle> {
           child: CircleAvatar(
             backgroundColor: Colors.grey,
             backgroundImage: _secilmisFoto == null
-                ? NetworkImage(widget.profil.fotoUrl)
+                ? NetworkImage(widget.profil.fotoUrl.isNotEmpty
+                    ? widget.profil.fotoUrl
+                    : "https://rafethokka.com/app/socialapp/avatar/001.png")
                 : FileImage(_secilmisFoto),
             radius: 55.0,
           ),

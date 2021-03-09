@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
@@ -64,11 +65,86 @@ class _GonderiKartiState extends State<GonderiKarti> {
           title: Text("Seçiminiz Nedir?"),
           children: [
             SimpleDialogOption(
+              child: Text("Gönderiyi Düzenle"),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                  duration: const Duration(seconds: 2),
+                  // action: SnackBarAction(
+                  //   label: 'Tamam',
+                  //   onPressed: () {},
+                  // ),
+                ));
+              },
+            ),
+            SimpleDialogOption(
+              child: Text("Yorum yapmayı kapat"),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                  duration: const Duration(seconds: 2),
+                  // action: SnackBarAction(
+                  //   label: 'Tamam',
+                  //   onPressed: () {},
+                  // ),
+                ));
+              },
+            ),
+            SimpleDialogOption(
               child: Text("Gönderiyi Sil"),
               onPressed: () {
                 FireStoreServisi()
                     .gonderiSil(aktifKullaniciId: _aktifKullaniciId, gonderi: widget.gonderi);
                 Navigator.pop(context);
+              },
+            ),
+            SimpleDialogOption(
+              child: Text("Vazgeç", style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  sikayetGonderiSecenekleri() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Seçiminiz Nedir?"),
+          children: [
+            SimpleDialogOption(
+              child: Text("Şikayet et..."),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                  duration: const Duration(seconds: 2),
+                  // action: SnackBarAction(
+                  //   label: 'Tamam',
+                  //   onPressed: () {},
+                  // ),
+                ));
+              },
+            ),
+            SimpleDialogOption(
+              child: Text("Takibi Bırak"),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                  duration: const Duration(seconds: 2),
+                  // action: SnackBarAction(
+                  //   label: 'Tamam',
+                  //   onPressed: () {},
+                  // ),
+                ));
               },
             ),
             SimpleDialogOption(
@@ -95,11 +171,10 @@ class _GonderiKartiState extends State<GonderiKarti> {
                     builder: (_) => Profil(profilSahibiId: widget.gonderi.yayinlayanId)));
           },
           child: CircleAvatar(
-            backgroundColor: Colors.blue,
-            backgroundImage: widget.yayinlayan.fotoUrl.isNotEmpty
-                ? NetworkImage(widget.yayinlayan.fotoUrl)
-                : AssetImage("assets/images/hayalet.png"),
-          ),
+              backgroundColor: Colors.blue,
+              backgroundImage: NetworkImage(widget.yayinlayan.fotoUrl.isNotEmpty
+                  ? widget.yayinlayan.fotoUrl
+                  : "https://rafethokka.com/app/socialapp/avatar/001.png")),
         ),
       ),
       title: GestureDetector(
@@ -116,7 +191,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
       ),
       trailing: _aktifKullaniciId == widget.gonderi.yayinlayanId
           ? IconButton(icon: Icon(Icons.more_vert), onPressed: () => gonderiSecenekleri())
-          : null,
+          : IconButton(icon: Icon(Icons.more_vert), onPressed: () => sikayetGonderiSecenekleri()),
       contentPadding: EdgeInsets.all(0.0),
     );
   }
@@ -147,7 +222,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
               onPressed: _begeniDegistir,
             ),
             IconButton(
-              icon: Icon(Icons.comment, size: 35.0),
+              icon: FaIcon(FontAwesomeIcons.comment, size: 30.0),
               onPressed: () {
                 Navigator.push(
                     context,

@@ -5,6 +5,7 @@ import 'package:socialapp/modeller/kullanici.dart';
 class YetkilendirmeServisi {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   String aktifKullaniciId;
+  String aktifKullaniciAdi;
 
   Kullanici _kullaniciOlustur(User kullanici) {
     return kullanici == null ? null : Kullanici.firebasedenUret(kullanici);

@@ -11,6 +11,22 @@ class Ara extends StatefulWidget {
 class _AraState extends State<Ara> {
   TextEditingController _aramaController = TextEditingController();
   Future<List<Kullanici>> _aramaSonucu;
+  List<Kullanici> _kullanicilar = [];
+
+  _kullanicilariGetir() async {
+    List<Kullanici> kullanicilar = await FireStoreServisi().kesfetKullanicilariGetir();
+    if (mounted) {
+      setState(() {
+        _kullanicilar = kullanicilar;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _kullanicilariGetir();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +67,52 @@ class _AraState extends State<Ara> {
     );
   }
 
-  aramaYok() {
-    return Center(child: Text("Kullanıcıl Ara"));
+  String kullaniciStili = "liste1";
+  Widget aramaYok() {
+    if (kullaniciStili == "liste") {
+      return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        itemCount: _kullanicilar.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(_kullanicilar[index].kullaniciAdi),
+          );
+        },
+      );
+    } else {
+      List<GridTile> fayanslar = [];
+      _kullanicilar.forEach((kullanici) {
+        fayanslar.add(_fayansOlustur(kullanici));
+      });
+      return GridView.count(
+        shrinkWrap: true, // sadece ihtiyacın kadar alanı kapla
+        crossAxisCount: 3,
+        mainAxisSpacing: 3.0,
+        crossAxisSpacing: 3.0,
+        childAspectRatio: 1.0,
+        physics: NeverScrollableScrollPhysics(),
+        children: fayanslar,
+      );
+    }
+  }
+
+  GridTile _fayansOlustur(Kullanici kullanici) {
+    return GridTile(
+        child: GestureDetector(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => Profil(
+                    profilSahibiId: kullanici.id,
+                  ))),
+      child: Image.network(
+        kullanici.fotoUrl.isNotEmpty
+            ? kullanici.fotoUrl
+            : "https://rafethokka.com/app/socialapp/avatar/016.png",
+        fit: BoxFit.cover,
+      ),
+    ));
   }
 
   sonuclariGetir() {
@@ -89,6 +149,7 @@ class _AraState extends State<Ara> {
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage: NetworkImage(kullanici.fotoUrl),
+          backgroundColor: Colors.grey[100],
         ),
         title: Text(
           kullanici.kullaniciAdi,
