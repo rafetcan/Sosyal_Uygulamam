@@ -103,7 +103,6 @@ class _SifremiUnuttumState extends State<SifremiUnuttum> {
       hataMesaji = "Bu mailde bir kullanıcı bulunmuyor";
     }
 
-    var snackBar = SnackBar(content: Text(hataMesaji));
-    _scaffoldAnahtari.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(hataMesaji)));
   }
 }

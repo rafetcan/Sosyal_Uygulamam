@@ -210,7 +210,6 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
       hataMesaji = "Tanımlanamayan bir hata oluştu $hataKodu";
     }
 
-    var snackBar = SnackBar(content: Text(hataMesaji));
-    _scaffoldAnahtari.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(hataMesaji)));
   }
 }

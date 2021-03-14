@@ -76,12 +76,6 @@ class _ProfilState extends State<Profil> {
 
   @override
   Widget build(BuildContext context) {
-    // setTest() {
-    //   setState(() {
-    //     LinearProgressIndicator();
-    //   });
-    // }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -129,22 +123,27 @@ class _ProfilState extends State<Profil> {
           color: Colors.black,
         ),
       ),
-      body: FutureBuilder<Object>(
-        future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
-        builder: (context, snapshot) {
-          //
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          _profilSahibi = snapshot.data;
-
-          return ListView(
-            children: [
-              _profilDetaylari(snapshot.data),
-              _gonderileriGoster(snapshot.data),
-            ],
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
         },
+        child: FutureBuilder<Object>(
+          future: FireStoreServisi().kullaniciGetir(widget.profilSahibiId),
+          builder: (context, snapshot) {
+            //
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            _profilSahibi = snapshot.data;
+
+            return ListView(
+              children: [
+                _profilDetaylari(snapshot.data),
+                _gonderileriGoster(snapshot.data),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -217,6 +216,7 @@ class _ProfilState extends State<Profil> {
                     _sosyalSayac(baslik: "Gönderiler", sayi: _gonderiSayisi),
                     _sosyalSayac(baslik: "Takipçi", sayi: _takipci),
                     _sosyalSayac(baslik: "Takip", sayi: _takipEdilen),
+                    // _sosyalSayac(baslik: "Puan", sayi: 0),
                   ],
                 ),
               ),
@@ -319,12 +319,9 @@ class _ProfilState extends State<Profil> {
         onPressed: () {
           Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ProfiliDuzenle(profil: _profilSahibi)))
-              .then((value) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Profil(
-                            profilSahibiId: _aktifKullaniciId,
-                          ))));
+              .then((value) {
+            setState(() {});
+          });
         },
         child: Text('Profili Düzenle'),
       ),
@@ -355,6 +352,31 @@ class _ProfilState extends State<Profil> {
   }
 
   void _cikisYap() {
-    Provider.of<YetkilendirmeServisi>(context, listen: false).cikisYap();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Uygulama'dan çıkış yap?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Provider.of<YetkilendirmeServisi>(context, listen: false).cikisYap();
+              },
+              child: Text(
+                "Çıkış Yap",
+                style: TextStyle(color: Colors.blue[700], fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  "İptal",
+                  style: TextStyle(color: Colors.black54),
+                ))
+          ],
+        );
+      },
+    );
   }
 }

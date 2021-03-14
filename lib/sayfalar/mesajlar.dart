@@ -14,6 +14,8 @@ class _MesajlarState extends State<Mesajlar> {
   int _gonderilenMesajSayisi = 0;
   String _aktifKullaniciId;
   List<Mesaj> _mesajlar = [];
+  // TODO
+  // ignore: unused_field
   Mesaj _mesaj;
 
   @override

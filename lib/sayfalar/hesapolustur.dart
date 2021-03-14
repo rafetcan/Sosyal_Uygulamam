@@ -158,7 +158,6 @@ class _HesapOlusturState extends State<HesapOlustur> {
 
     // Test
 
-    var snackBar = SnackBar(content: Text(hataMesaji));
-    _scaffoldAnahtari.currentState.showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(hataMesaji)));
   }
 }

@@ -66,25 +66,32 @@ class _AkisState extends State<Akis> {
           )
         ],
       ),
-      body: ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: _gonderiler.length,
-        itemBuilder: (context, index) {
-          Gonderi gonderi = _gonderiler[index];
-
-          return SilinmeyenFutureBuilder(
-            future: FireStoreServisi().kullaniciGetir(gonderi.yayinlayanId),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return SizedBox();
-              }
-
-              Kullanici gonderiSahibi = snapshot.data;
-              return GonderiKarti(gonderi: gonderi, yayinlayan: gonderiSahibi);
-            },
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // _gonderiler = [];
+          await _akisGonderileriniGetir();
+          print("AkışGönderileri Getirildi.");
         },
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: _gonderiler.length,
+          itemBuilder: (context, index) {
+            Gonderi gonderi = _gonderiler[index];
+
+            return SilinmeyenFutureBuilder(
+              future: FireStoreServisi().kullaniciGetir(gonderi.yayinlayanId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return SizedBox();
+                }
+
+                Kullanici gonderiSahibi = snapshot.data;
+                return GonderiKarti(gonderi: gonderi, yayinlayan: gonderiSahibi);
+              },
+            );
+          },
+        ),
       ),
     );
   }

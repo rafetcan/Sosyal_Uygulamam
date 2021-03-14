@@ -95,9 +95,10 @@ class _GonderiKartiState extends State<GonderiKarti> {
             SimpleDialogOption(
               child: Text("Gönderiyi Sil"),
               onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
                 FireStoreServisi()
                     .gonderiSil(aktifKullaniciId: _aktifKullaniciId, gonderi: widget.gonderi);
-                Navigator.pop(context);
               },
             ),
             SimpleDialogOption(
@@ -171,7 +172,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
                     builder: (_) => Profil(profilSahibiId: widget.gonderi.yayinlayanId)));
           },
           child: CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.grey[100],
               backgroundImage: NetworkImage(widget.yayinlayan.fotoUrl.isNotEmpty
                   ? widget.yayinlayan.fotoUrl
                   : "https://rafethokka.com/app/socialapp/avatar/001.png")),
