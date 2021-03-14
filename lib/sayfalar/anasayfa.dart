@@ -9,9 +9,6 @@ import 'package:socialapp/sayfalar/profil.dart';
 import 'package:socialapp/servisler/yetkilendirmeservisi.dart';
 
 class AnaSayfa extends StatefulWidget {
-  final int aktifSayfaNo;
-
-  const AnaSayfa({Key key, this.aktifSayfaNo = 0}) : super(key: key);
   @override
   _AnaSayfaState createState() => _AnaSayfaState();
 }
@@ -24,7 +21,6 @@ class _AnaSayfaState extends State<AnaSayfa> {
   void initState() {
     super.initState();
     sayfaKumandasi = PageController();
-    _aktifSayfaNo = widget.aktifSayfaNo;
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/kullanici.dart';
 import 'package:socialapp/sayfalar/hesapolustur.dart';
@@ -89,10 +90,10 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context)
+                  onPressed: () => Get.to(HesapOlustur()),
+                  /*//! Temizlenecek  Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => HesapOlustur()));
-                  },
+                  },*/
                   child: Text(
                     "Hesap Oluştur",
                     style: TextStyle(
@@ -136,8 +137,8 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
           SizedBox(height: 20),
           Center(
               child: InkWell(
-                  onTap: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => SifremiUnuttum())),
+                  onTap: () => Get.to(SifremiUnuttum()),
+                  //! Temizlenecek Navigator.push(context, MaterialPageRoute(builder: (_) => SifremiUnuttum())),
                   child: Text("Şifremi Unuttum"))),
         ],
       ),

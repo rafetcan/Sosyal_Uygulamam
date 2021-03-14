@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/kullanici.dart';
 import 'package:socialapp/modeller/mesaj.dart';
@@ -41,7 +42,12 @@ class _MesajlarState extends State<Mesajlar> {
         centerTitle: true,
         backgroundColor: Colors.grey[100],
         leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
-        actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Get.snackbar("Test", "Henüz Yapılmadı"),
+          )
+        ],
       ),
       body: FutureBuilder<List<Mesaj>>(
         future: FireStoreServisi().gonderilenMesajlar(_aktifKullaniciId),

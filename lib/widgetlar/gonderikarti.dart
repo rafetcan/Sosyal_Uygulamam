@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
 import 'package:socialapp/sayfalar/profil.dart';
 import 'package:socialapp/sayfalar/yorumlar.dart';
+import 'package:socialapp/sayfalar/yukle.dart';
 import 'package:socialapp/servisler/firestoreservisi.dart';
 import 'package:socialapp/servisler/yetkilendirmeservisi.dart';
 
@@ -68,6 +70,7 @@ class _GonderiKartiState extends State<GonderiKarti> {
               child: Text("Gönderiyi Düzenle"),
               onPressed: () {
                 Navigator.pop(context);
+
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: const Text('Henüz çalışmalarımız bitmedi.'),
                   duration: const Duration(seconds: 2),
@@ -127,10 +130,6 @@ class _GonderiKartiState extends State<GonderiKarti> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: const Text('Henüz çalışmalarımız bitmedi.'),
                   duration: const Duration(seconds: 2),
-                  // action: SnackBarAction(
-                  //   label: 'Tamam',
-                  //   onPressed: () {},
-                  // ),
                 ));
               },
             ),
@@ -138,13 +137,12 @@ class _GonderiKartiState extends State<GonderiKarti> {
               child: Text("Takibi Bırak"),
               onPressed: () {
                 Navigator.pop(context);
+                FireStoreServisi().takiptenCik(
+                    aktifKullaniciId: _aktifKullaniciId,
+                    profilSahibiId: widget.gonderi.yayinlayanId);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: const Text('Henüz çalışmalarımız bitmedi.'),
+                  content: const Text('Takipten çıkıldı.'),
                   duration: const Duration(seconds: 2),
-                  // action: SnackBarAction(
-                  //   label: 'Tamam',
-                  //   onPressed: () {},
-                  // ),
                 ));
               },
             ),
@@ -165,12 +163,13 @@ class _GonderiKartiState extends State<GonderiKarti> {
       leading: Padding(
         padding: const EdgeInsets.only(left: 12.0),
         child: GestureDetector(
-          onTap: () {
+          onTap: () => Get.to(Profil(profilSahibiId: widget.gonderi.yayinlayanId)),
+          /* //! Temizlenecek
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (_) => Profil(profilSahibiId: widget.gonderi.yayinlayanId)));
-          },
+          },*/
           child: CircleAvatar(
               backgroundColor: Colors.grey[100],
               backgroundImage: NetworkImage(widget.yayinlayan.fotoUrl.isNotEmpty
@@ -179,12 +178,12 @@ class _GonderiKartiState extends State<GonderiKarti> {
         ),
       ),
       title: GestureDetector(
-        onTap: () {
-          Navigator.push(
+        onTap: () => Get.to(Profil(profilSahibiId: widget.gonderi.yayinlayanId)),
+        /*//! Temizlenecek  Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (_) => Profil(profilSahibiId: widget.gonderi.yayinlayanId)));
-        },
+        },*/
         child: Text(
           widget.yayinlayan.kullaniciAdi,
           style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
@@ -224,14 +223,11 @@ class _GonderiKartiState extends State<GonderiKarti> {
             ),
             IconButton(
               icon: FaIcon(FontAwesomeIcons.comment, size: 30.0),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Yorumlar(
-                              gonderi: widget.gonderi,
-                            )));
-              },
+              onPressed: () => Yorumlar(gonderi: widget.gonderi),
+              /*//! Temizlenecek
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Yorumlar(gonderi: widget.gonderi)));
+              },*/
             )
           ],
         ),

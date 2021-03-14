@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/sayfalar/anasayfa.dart';
@@ -129,7 +130,8 @@ class _YukleState extends State<Yukle> {
         konumTextKumandasi.clear();
         dosya = null;
       });
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AnaSayfa()));
+      Get.offAll(AnaSayfa()); // Test Edilecek (off veya offAll)
+      //! Temizlenecek Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AnaSayfa()));
     }
   }
 

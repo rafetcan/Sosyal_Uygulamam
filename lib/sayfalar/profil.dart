@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
@@ -181,13 +182,13 @@ class _ProfilState extends State<Profil> {
   GridTile _fayansOlustur(Gonderi gonderi) {
     return GridTile(
         child: GestureDetector(
-      onTap: () => Navigator.push(
+      onTap: () =>
+          Get.to(TekliGonderi(gonderiId: gonderi.id, gonderiSahibiId: gonderi.yayinlayanId)),
+      /*//! Temizlenecek Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => TekliGonderi(
-                    gonderiId: gonderi.id,
-                    gonderiSahibiId: gonderi.yayinlayanId,
-                  ))),
+              builder: (_) =>
+                  TekliGonderi(gonderiId: gonderi.id, gonderiSahibiId: gonderi.yayinlayanId))), */
       child: Image.network(
         gonderi.gonderiResmiUrl,
         fit: BoxFit.cover,
@@ -316,13 +317,15 @@ class _ProfilState extends State<Profil> {
     return Container(
       width: double.infinity,
       child: OutlinedButton(
-        onPressed: () {
-          Navigator.push(context,
+        onPressed: () => Get.to(ProfiliDuzenle(profil: _profilSahibi)).then((value) {
+          setState(() {});
+        }),
+        /*//! Temizlenecek Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ProfiliDuzenle(profil: _profilSahibi)))
               .then((value) {
             setState(() {});
           });
-        },
+        },*/
         child: Text('Profili Düzenle'),
       ),
     );

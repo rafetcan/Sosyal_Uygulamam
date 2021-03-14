@@ -37,6 +37,8 @@ dependencies:
   firebase_storage: ^8.0.0
   uuid: ^3.0.1
   timeago: ^3.0.1
+  get: ^4.0.0-nullsafety.2
+  get_storage: ^2.0.1
 
   font_awesome_flutter: ^8.11.0
   custom_navigation_bar: ^0.7.1

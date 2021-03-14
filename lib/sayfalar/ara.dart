@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:socialapp/modeller/kullanici.dart';
 import 'package:socialapp/sayfalar/profil.dart';
 import 'package:socialapp/servisler/firestoreservisi.dart';
@@ -100,12 +101,10 @@ class _AraState extends State<Ara> {
   GridTile _fayansOlustur(Kullanici kullanici) {
     return GridTile(
         child: GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (_) => Profil(
-                    profilSahibiId: kullanici.id,
-                  ))),
+      onTap: () => Get.to(Profil(profilSahibiId: kullanici.id)),
+      /*//! Temizlenecek
+      Navigator.push(
+          context, MaterialPageRoute(builder: (_) => Profil(profilSahibiId: kullanici.id))),*/
       child: Image.network(
         kullanici.fotoUrl.isNotEmpty
             ? kullanici.fotoUrl
@@ -140,12 +139,10 @@ class _AraState extends State<Ara> {
 
   kullaniciSatiri(Kullanici kullanici) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Profil(
-                    profilSahibiId: kullanici.id,
-                  ))),
+      onTap: () => Get.to(Profil(profilSahibiId: kullanici.id)),
+      /* //!Temizlenecek
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Profil(profilSahibiId: kullanici.id))), */
       child: ListTile(
         leading: CircleAvatar(
           backgroundImage: NetworkImage(kullanici.fotoUrl),

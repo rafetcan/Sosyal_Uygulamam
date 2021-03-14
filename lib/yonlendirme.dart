@@ -13,7 +13,7 @@ class Yonlendirme extends StatelessWidget {
     return StreamBuilder(
       stream: _yetkilendirmeServisi.durumTakipcisi,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.none) {
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 

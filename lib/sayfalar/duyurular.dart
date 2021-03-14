@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/duyuru.dart';
 import 'package:socialapp/modeller/kullanici.dart';
@@ -75,10 +76,12 @@ class _DuyurularState extends State<Duyurular> {
 
         return ListTile(
           leading: InkWell(
-            onTap: () => Navigator.push(
+            onTap: () => Get.to(Profil(profilSahibiId: duyuru.aktiviteYapanId)),
+            /* //! Temizlenecek 
+             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Profil(profilSahibiId: duyuru.aktiviteYapanId))),
+                    builder: (context) => Profil(profilSahibiId: duyuru.aktiviteYapanId))), */
             child: CircleAvatar(
               backgroundColor: Colors.grey[100],
               backgroundImage: NetworkImage(aktiviteYapan.fotoUrl.isNotEmpty
@@ -89,14 +92,13 @@ class _DuyurularState extends State<Duyurular> {
           title: RichText(
             text: TextSpan(
                 recognizer: TapGestureRecognizer()
-                  ..onTap = () {
+                  ..onTap = () => Get.to(Profil(profilSahibiId: duyuru.aktiviteYapanId)),
+                /* //!Temizlenecek
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Profil(
-                                  profilSahibiId: duyuru.aktiviteYapanId,
-                                )));
-                  },
+                            builder: (context) => Profil(profilSahibiId: duyuru.aktiviteYapanId)));
+                  */
                 text: "${aktiviteYapan.kullaniciAdi}",
                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                 children: [
@@ -117,15 +119,14 @@ class _DuyurularState extends State<Duyurular> {
       return null;
     } else if (aktiviteTipi == "begeni" || aktiviteTipi == "yorum") {
       return GestureDetector(
-        onTap: () {
+        onTap: () => Get.to(TekliGonderi(gonderiId: gonderiId, gonderiSahibiId: _aktifKullaniciId)),
+        /*//! Temizlenecek
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => TekliGonderi(
-                        gonderiId: gonderiId,
-                        gonderiSahibiId: _aktifKullaniciId,
-                      )));
-        },
+                  builder: (context) =>
+                      TekliGonderi(gonderiId: gonderiId, gonderiSahibiId: _aktifKullaniciId)));
+        },*/
         child: Image.network(
           gonderiFoto,
           width: 50.0,

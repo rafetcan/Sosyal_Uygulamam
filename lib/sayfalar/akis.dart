@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:socialapp/modeller/gonderi.dart';
 import 'package:socialapp/modeller/kullanici.dart';
@@ -43,7 +44,9 @@ class _AkisState extends State<Akis> {
         leading: IconButton(
           icon: FaIcon(FontAwesomeIcons.plus),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => Yukle()));
+            Get.to(Yukle());
+            //! Temizlenecek
+            // Navigator.push(context, MaterialPageRoute(builder: (_) => Yukle()));
           },
           iconSize: 18.0,
         ),
@@ -60,7 +63,9 @@ class _AkisState extends State<Akis> {
               child: FaIcon(FontAwesomeIcons.inbox),
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => Mesajlar()));
+              Get.to(Mesajlar());
+              //! Temizlenecek
+              // Navigator.push(context, MaterialPageRoute(builder: (_) => Mesajlar()));
             },
             iconSize: 20.0,
           )

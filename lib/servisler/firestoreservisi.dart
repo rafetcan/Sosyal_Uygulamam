@@ -9,6 +9,21 @@ class FireStoreServisi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final DateTime zaman = DateTime.now();
 
+  void testMesajiOlustur() {
+    _firestore
+        .collection("mesajlar")
+        .doc("8oGHrfOpC7bIv89zHm8ITGQtGL12")
+        .collection("kullanicininMesajlari")
+        .add({
+      "mesaj": "naber",
+      "mesajResimUrl": "-",
+      "mesajiAlanId": "sMSBZNxZkzVIGYrp8sncZIpoQHX2",
+      "mesajiGonderenId": "8oGHrfOpC7bIv89zHm8ITGQtGL12",
+      "olusturulmaZamani": zaman
+    });
+    print("Mesaj Gönderildi");
+  }
+
   Future<int> gonderilenMesajSayisi(kullaniciId) async {
     //aktif kullanıcı id gelecek
     QuerySnapshot snapshot = await _firestore
@@ -94,15 +109,15 @@ class FireStoreServisi {
     return kullanicilar;
   }
 
-  void takipEt({String aktifKullaniciId, String profilSahibiId}) {
-    _firestore
+  void takipEt({String aktifKullaniciId, String profilSahibiId}) async {
+    await _firestore
         .collection("takipciler")
         .doc(profilSahibiId)
         .collection("kullanicininTakipcileri")
         .doc(aktifKullaniciId)
         .set({});
 
-    _firestore
+    await _firestore
         .collection("takipedilenler")
         .doc(aktifKullaniciId)
         .collection("kullanicininTakipleri")
@@ -181,40 +196,56 @@ class FireStoreServisi {
       {String aktiviteYapanId,
       String profilSahibiId,
       String aktiviteTipi,
-      String yorum = "",
+      String yorum = "-",
       Gonderi gonderi}) async {
     if (aktiviteYapanId == profilSahibiId) {
       return;
     }
 
-    QuerySnapshot docQuery = await _firestore
-        .collection("duyurular")
-        .doc(profilSahibiId)
-        .collection("kullanicininDuyurulari")
-        .where("aktiviteYapanId", isEqualTo: aktiviteYapanId)
-        .where("aktiviteTipi", isEqualTo: aktiviteTipi)
-        .where("yorum", isLessThanOrEqualTo: yorum)
-        .get();
+    try {
+      _firestore
+          .collection("duyurular")
+          .doc(profilSahibiId)
+          .collection("kullanicininDuyurulari")
+          .where("aktiviteYapanId", isEqualTo: aktiviteYapanId)
+          .where("aktiviteTipi", isEqualTo: aktiviteTipi)
+          .where("yorum", isLessThanOrEqualTo: yorum)
+          .get()
+          .then((QuerySnapshot docQuery) {
+        // print(docQuery.docs.length);
+        if (docQuery.docs.length >= 1) {
+          docQuery.docs[0].reference.update({"olusturulmaZamani": zaman});
+          print("Aynı İşlem ${docQuery.docs.length} defa yapılmış.. Zamanını Güncelledim.");
+        }
 
-    // print(docQuery.docs.length);
-    if (docQuery.docs.length >= 1) {
-      docQuery.docs[0].reference.update({"olusturulmaZamani": zaman});
-      print("Aynı İşlem ${docQuery.docs.length} defa yapılmış.. Zamanını Güncelledim.");
-    }
+        if (docQuery.docs.isNotEmpty) {
+          List<Duyuru> duyurular = docQuery.docs.map((doc) => Duyuru.dokumandanUret(doc)).toList();
 
-    if (docQuery.docs.isNotEmpty) {
-      List<Duyuru> duyurular = docQuery.docs.map((doc) => Duyuru.dokumandanUret(doc)).toList();
+          duyurular.forEach((Duyuru duyuru) {
+            // aktiviteTipi, aktiviteYapanId,profilSahibiId,yorum bunlar eşit ise
+            if (duyuru.aktiviteTipi == aktiviteTipi &&
+                duyuru.aktiviteYapanId == aktiviteYapanId &&
+                duyuru.yorum == yorum) {
+              print("Böyle bir işlemi daha önce yapmışsın dostum");
 
-      duyurular.forEach((Duyuru duyuru) {
-        // aktiviteTipi, aktiviteYapanId,profilSahibiId,yorum bunlar eşit ise
-        if (duyuru.aktiviteTipi == aktiviteTipi &&
-            duyuru.aktiviteYapanId == aktiviteYapanId &&
-            duyuru.yorum == yorum) {
-          print("Böyle bir işlemi daha önce yapmışsın dostum");
+              // _firestore.collection("duyurular").doc(profilSahibiId).collection("kullaniciDuyurulari")
+              // Birşey Yapma veya o dökumanın tarihini yenile.
 
-          // _firestore.collection("duyurular").doc(profilSahibiId).collection("kullaniciDuyurulari")
-          // Birşey Yapma veya o dökumanın tarihini yenile.
-
+            } else {
+              _firestore
+                  .collection("duyurular")
+                  .doc(profilSahibiId)
+                  .collection("kullanicininDuyurulari")
+                  .add({
+                "aktiviteYapanId": aktiviteYapanId,
+                "aktiviteTipi": aktiviteTipi,
+                "gonderiId": gonderi?.id,
+                "gonderiFoto": gonderi?.gonderiResmiUrl,
+                "yorum": yorum,
+                "olusturulmaZamani": zaman
+              });
+            }
+          });
         } else {
           _firestore
               .collection("duyurular")
@@ -230,19 +261,8 @@ class FireStoreServisi {
           });
         }
       });
-    } else {
-      _firestore
-          .collection("duyurular")
-          .doc(profilSahibiId)
-          .collection("kullanicininDuyurulari")
-          .add({
-        "aktiviteYapanId": aktiviteYapanId,
-        "aktiviteTipi": aktiviteTipi,
-        "gonderiId": gonderi?.id,
-        "gonderiFoto": gonderi?.gonderiResmiUrl,
-        "yorum": yorum,
-        "olusturulmaZamani": zaman
-      });
+    } catch (e) {
+      print(e.toString());
     }
 
     // Test Edilmesi Gereken
