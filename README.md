@@ -1,33 +1,33 @@
-# Sosyal Uygulamam
+# My Social Application v0.1.1
 My Social App
 
 ## ChangeLog
 ### 0.1.1
-- Fotoğraf Çek'te oluşan hata çözüldü.
-- Boş Fotoğraf'ta oluşabilecek sorunlar çözüldü.
-- Resimsiz profillere boş kullanıcı resmi eklendi.
-- Hedef Sdk düşürüldü. (artık 29) 
-- Yeni BottomNavigation
+- The error that occurred in Take a Photo has been resolved.
+- The problems that may occur in Blank Photo have been solved.
+- An empty user image has been added to profiles without an image.
+- The target Sdk has been dropped. (no more 29)
+- New BottomNavigation
 - Badge Packages
-- Keşfet sayfası
-- Profil arkaplanları düzeltildi.(Keşfet,Bildirimler)
+- Explore page
+- Fixed profile backgrounds.(Discover,Notifications)
 
 
-### 0.1.0 Alpha 08.03.2021
-- Arama sayfası eklendi.
-- Farklı Kullanıcılar sayfası eklendi.
-- Takip Et / Takipten çıkar eklendi.
-- Yorum / Beğeni / Takip duyuruları eklendi.
-- Gönderilere yorum yapma özelliği eklendi.
-- Profili düzenle eklendi.
-- Gönderi silme eklendi.
-- Şifremi unuttum eklendi.
+###0.1.0 Alpha 08.03.2021
+- Added a search page.Dec.
+- Added a different Users page.
+- Follow/Unfollow has been added.
+- Added Comments/Likes/Follow-up announcements.
+- Added the ability to comment on posts.
+- Added Edit profile.
+- Added post deletion.
+- I forgot my password.
 
-Performans ve Hata Değişiklikleri
-- Not Mounted hatası çözüldü.
-- Artık profili düzenledikten sonra profil bilgilerinizde anlık olarak yenilenecek.
-- Profil fotoğrafı güncellerken hataya neden olan sorun çözüldü.
-- Flutter 2.0'a yükseltildi.
-- Bağımlıklar son sürümüne yükseltildi.
-- Görsel iyileştirmeler yapıldı.
-- Gönderi Paylaşım yerinde değişiklik.
+Performance and Error Changes
+- Note The Mounted error has been resolved.
+- Now, after editing the profile, your profile information will be updated instantly.
+- The problem that caused the error when updating the profile photo has been solved.
+- Upgraded to Flutter 2.0.
+- The dependencies have been upgraded to the latest version.
+- Visual improvements have been made.
+- Change the Post Sharing location.
